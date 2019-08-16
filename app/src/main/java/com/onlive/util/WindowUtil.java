@@ -19,4 +19,8 @@ public class WindowUtil {
             window.setStatusBarColor(color);
         }
     }
+    //隐藏状态栏
+    public static void hideStatusBar(Activity activity){
+        activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    }
 }

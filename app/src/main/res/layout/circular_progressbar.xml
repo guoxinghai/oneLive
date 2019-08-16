@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="20dp">
+    <com.github.rahatarmanahmed.cpv.CircularProgressView
+        app:cpv_color="@color/colorPrimary"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:orientation="vertical"
+        app:cpv_animAutostart="true"
+        app:cpv_indeterminate="true" />
+    <TextView
+        android:id="@+id/progressbar_msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_gravity="center_vertical"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:text="waiting"/>
+</LinearLayout>

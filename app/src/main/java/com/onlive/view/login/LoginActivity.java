@@ -1,7 +1,6 @@
 package com.onlive.view.login;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -9,13 +8,12 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.onlive.R;
 import com.onlive.presenter.login.LoginPresenter;
-import com.onlive.util.RegexUtils;
+import com.onlive.util.ButtonUtils;
 import com.onlive.view.register.RegisterActivity;
 
 public class LoginActivity extends AppCompatActivity {
@@ -31,18 +29,9 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        loginPresenter = new LoginPresenter();
-        loginPresenter.onAttach(this);
-        //隐藏状态栏
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        //设置window颜色
-        loginPresenter.setStatusBarColor(Color.rgb(25,118,210));
-        //获取组件
+        //获取组件设置监听者
         init();
-        //注册设置监听
-        loginPresenter.setRegisterListener();
-        //给TextInputEditText设置监听者
-        loginPresenter.setTextInputEditTextListener();
+
 
     }
     public void setRegisterListener(){
@@ -61,35 +50,16 @@ public class LoginActivity extends AppCompatActivity {
         lg_register = findViewById(R.id.lg_register);
         lg_user_layout = findViewById(R.id.lg_user_layout);
         lg_pass_layout = findViewById(R.id.lg_pass_layout);
-    }
-
-    public TextInputEditText getLg_user() {
-        return lg_user;
-    }
-
-    public TextInputEditText getLg_pass() {
-        return lg_pass;
-    }
-
-    public Button getLg_login() {
-        return lg_login;
-    }
-
-    public TextView getLg_register() {
-        return lg_register;
-    }
-
-    public TextInputLayout getLg_user_layout() {
-        return lg_user_layout;
-    }
-
-    public TextInputLayout getLg_pass_layout() {
-        return lg_pass_layout;
-    }
-
-    //给TextInputLayout设置错误信息
-    public void setError(TextInputLayout textInputLayout,String msg){
-        textInputLayout.setError(msg);
+        loginPresenter = new LoginPresenter();
+        //与绑定loginPresenter绑定
+        loginPresenter.onAttach(this);
+        //隐藏状态栏
+        loginPresenter.hideStatusBar();
+        //给TextInputEditText设置监听者
+        setUserTextInputEditTextListener();
+        setPassTextInputEditTextListener();
+        //给注册设置监听者
+        setRegisterListener();
     }
     //给UserTextInputEditText设置监听者
     public void setUserTextInputEditTextListener(){
@@ -102,16 +72,7 @@ public class LoginActivity extends AppCompatActivity {
             }
             @Override
             public void afterTextChanged(Editable s) {
-                if(s!=null&&!RegexUtils.isPhoneNumber(s.toString())){
-                    lg_user_layout.setError("手机号格式错误");
-                    lg_user_layout.setErrorEnabled(true);
-                    setLoginButtonClick(false);
-                }else{
-                    lg_user_layout.setErrorEnabled(false);
-                    if(!(lg_user_layout.isErrorEnabled()||lg_pass_layout.isErrorEnabled())){
-                        setLoginButtonClick(true);
-                    }
-                }
+                loginPresenter.onUserTextChange(s);
             }
         });
     }
@@ -126,31 +87,37 @@ public class LoginActivity extends AppCompatActivity {
             }
             @Override
             public void afterTextChanged(Editable s) {
-                if(s == null){
-                    lg_pass_layout.setError("密码不能为空!");
-                    lg_pass_layout.setErrorEnabled(true);
-                    setLoginButtonClick(false);
-                }else if(!RegexUtils.isPassNumber(s.toString())){
-                    lg_pass_layout.setError("密码格式错误(6-20位同时包含数字和字母)");
-                    lg_pass_layout.setErrorEnabled(true);
-                    setLoginButtonClick(false);
-                }else{
-                    lg_pass_layout.setErrorEnabled(false);
-                    if(!(lg_user_layout.isErrorEnabled()||lg_pass_layout.isErrorEnabled())){
-                        setLoginButtonClick(true);
-                    }
-                }
+                loginPresenter.onPassTextChange(s);
             }
         });
     }
-    //设置login按钮的可点击性
-    private void setLoginButtonClick(boolean flag){
-        if(flag){
-            lg_login.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-            lg_login.setClickable(true);
-        }else{
-            lg_login.setBackgroundColor(getResources().getColor(R.color.gray));
-            lg_login.setClickable(false);
-        }
+    //用户手机号输入错误
+    public void userInputPhoneError(){
+        lg_user_layout.setError("手机号格式错误");
+        lg_user_layout.setErrorEnabled(true);
+        setButtonStatus(false);
     }
+    //用户密码输入错误
+    public void userInputPassError(){
+        lg_pass_layout.setError("密码格式错误(6-20位同时包含数字和字母)");
+        lg_pass_layout.setErrorEnabled(true);
+        setButtonStatus(false);
+    }
+    //用户手机号输入正确
+    public void userInputPhoneCorrect(){
+        lg_user_layout.setErrorEnabled(false);
+    }
+    //用户密码输入正确
+    public void userInputPassCorrect(){
+        lg_pass_layout.setErrorEnabled(false);
+    }
+    //获取用户输入TextInputLayout是否可以设置error信息
+    public boolean getTextInputLayoutErrorAble(){
+        return lg_user_layout.isErrorEnabled()||lg_pass_layout.isErrorEnabled();
+    }
+    //设置按钮状态
+    public void setButtonStatus(boolean flag){
+        ButtonUtils.setLoginButtonClick(lg_login,getResources(),flag);
+    }
+
 }
