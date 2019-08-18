@@ -9,4 +9,6 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
+    <string name="accessKeyId">LTAIxhDLF2lbQuTB</string>
+    <string name="accessSecret">h37L0t0gAP3vd7ehiwNVt9bJ3Da3TA</string>
 </resources>

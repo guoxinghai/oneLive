@@ -1,6 +1,7 @@
 package com.onlive.util;
 
 import android.content.res.Resources;
+import android.util.Log;
 import android.widget.Button;
 
 import com.onlive.R;

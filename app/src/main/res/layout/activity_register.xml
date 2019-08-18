@@ -27,6 +27,7 @@
         android:progressDrawable="@drawable/progress"
         />
     <ImageButton
+        android:id="@+id/rg_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/back"
@@ -86,6 +87,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:textColorHint="@color/gray"
+        app:errorEnabled="false"
         app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
 
         <android.support.design.widget.TextInputEditText
@@ -108,7 +110,7 @@
         <!--android:background="@drawable/input_border_bottom"-->
 
     </android.support.design.widget.TextInputLayout>
-    <Button
+    <com.onlive.view.button.CountDownButton
         android:id="@+id/rg_register"
         style="@style/Button.Primary"
         android:layout_width="match_parent"

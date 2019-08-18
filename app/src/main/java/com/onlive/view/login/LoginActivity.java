@@ -1,13 +1,13 @@
 package com.onlive.view.login;
 
 import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -24,7 +24,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextInputEditText lg_pass;
     private Button lg_login;
     private TextView lg_register;
-
+    private Bundle register_msg;//用来保存注册活动的信息
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,12 +35,10 @@ public class LoginActivity extends AppCompatActivity {
 
     }
     public void setRegisterListener(){
-        lg_register.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-                startActivity(intent);
-            }
+        lg_register.setOnClickListener(v -> {
+            Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+            intent.putExtra("register_msg",register_msg);
+            startActivityForResult(intent,1);
         });
     }
     public void init(){
@@ -51,6 +49,7 @@ public class LoginActivity extends AppCompatActivity {
         lg_user_layout = findViewById(R.id.lg_user_layout);
         lg_pass_layout = findViewById(R.id.lg_pass_layout);
         loginPresenter = new LoginPresenter();
+        register_msg = new Bundle();
         //与绑定loginPresenter绑定
         loginPresenter.onAttach(this);
         //隐藏状态栏
@@ -119,5 +118,16 @@ public class LoginActivity extends AppCompatActivity {
     public void setButtonStatus(boolean flag){
         ButtonUtils.setLoginButtonClick(lg_login,getResources(),flag);
     }
-
+    //接收注册界面返回的数据
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        loginPresenter.onActivityResult(requestCode,resultCode,data);
+    }
+    //向register_msg中放入数据
+    public void putDataForBundle(String name,String value){
+        register_msg.putString(name,value);
+    }
+    public void putDataForBundle(String name,long value){
+        register_msg.putLong(name,value);
+    }
 }

@@ -30,7 +30,7 @@ public class ProcessBarUtil {
             builder.setNegativeButton(negativeBtnText, negativeCallback);
         }
         builder.setCancelable(cancelable);
-        return builder.show();
+        return builder.create();
     }
     //普通对话框
     public static AlertDialog showSimpleDialog(Context context, String title, String message,
