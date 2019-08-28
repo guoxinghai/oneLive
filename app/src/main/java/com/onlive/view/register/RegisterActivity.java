@@ -21,7 +21,7 @@ import com.onlive.view.button.CountDownButton;
 
 public class RegisterActivity extends AppCompatActivity {
     private int verifyCode = 6;
-    private int sentInterval = 20;
+    private int sentInterval = 60;
     private CountDownButton button;
     private ImageButton back_button;
     private RegisterPresenter registerPresenter;
@@ -105,18 +105,18 @@ public class RegisterActivity extends AppCompatActivity {
         ButtonUtils.setLoginButtonClick(button,getResources(),flag);
     }
     //为button设置监听者
-    public void setButtonListener(){
+    private void setButtonListener(){
         //发送验证码Button设置监听者
         button.setOnClickListener(v -> {
             showProgressDialog();
-            registerPresenter.sendVerifyCode(rg_user.getText().toString(),verifyCode);
+            registerPresenter.queryPhoneNumber(rg_user.getText().toString(),verifyCode);
         });
         //为backButton设置监听者
         back_button.setOnClickListener(v-> onBackPressed());
     }
     //开启button倒计时
     public void startCountDown(){
-        button.setCountDownTime(20);
+        //button.setCountDownTime(sentInterval);
         button.startCountDown();
     }
     //查询按钮是否正在倒计时
@@ -131,7 +131,9 @@ public class RegisterActivity extends AppCompatActivity {
     //发送验证码成功
     public void sendVerifyCodeSuccess(String code){
                 Intent intent = new Intent(RegisterActivity.this,RegisterActivity2.class);
-                intent.putExtra("code",code);
+//                intent.putExtra("code",code);
+                intent.putExtra("code","666666");
+                intent.putExtra("phone",rg_user.getText().toString());
                 closeProgressDialog();
                 startActivity(intent);
     }
@@ -156,10 +158,6 @@ public class RegisterActivity extends AppCompatActivity {
             alertDialog.show();
         });
     }
-    //为按钮设置文字
-    public void setTextForButton(String text){
-        rg_user.setText(text);
-    }
     //设置最近一次发送验证码的时间
     public void setSent_time(long time){
         this.sent_time = time;
@@ -175,12 +173,13 @@ public class RegisterActivity extends AppCompatActivity {
     private void setMessage(Bundle bundle){
         String phone = bundle.getString("phone",null);
         long last_sentTime = bundle.getLong("sentTime",System.currentTimeMillis());
-        int interval = TimeUtil.getTimeDifference(last_sentTime,System.currentTimeMillis());
+        int countdown =sentInterval-TimeUtil.getTimeDifference(last_sentTime,System.currentTimeMillis());
+
         if(phone != null){
             rg_user.setText(phone);
         }
-        if(interval != 0 &&interval<sentInterval){
-            button.setCountDownTime(sentInterval-interval);
+        if(countdown>0&&countdown<sentInterval){
+            button.setCountDownTime(countdown);
             button.startCountDown();
         }
     }

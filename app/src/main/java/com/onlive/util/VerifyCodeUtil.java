@@ -24,8 +24,8 @@ public class VerifyCodeUtil {
     //获取发送验证码的request
     public static CommonRequest getVerityCodeRequest(String phone, String code){//n为后去验证码的个数
         CommonRequest request = new CommonRequest();
-//        String json_code = "{'code':'"+code+"'}";
-        String json_code = "9999";
+        String json_code = "{'code':'"+code+"'}";
+//        String json_code = "9999";
         request.setMethod(MethodType.POST);
         request.setDomain("dysmsapi.aliyuncs.com");
         request.setVersion("2017-05-25");

@@ -71,7 +71,6 @@
                 app:errorEnabled="true"
                 app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
 
-
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/lg_pass"
                     style="@style/TextStyle"

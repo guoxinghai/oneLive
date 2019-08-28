@@ -1,9 +1,11 @@
 package com.onlive.view.login;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -12,8 +14,11 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.onlive.R;
+import com.onlive.model.User;
 import com.onlive.presenter.login.LoginPresenter;
 import com.onlive.util.ButtonUtils;
+import com.onlive.util.ProcessBarUtil;
+import com.onlive.view.home.HomeActivity;
 import com.onlive.view.register.RegisterActivity;
 
 public class LoginActivity extends AppCompatActivity {
@@ -24,6 +29,8 @@ public class LoginActivity extends AppCompatActivity {
     private TextInputEditText lg_pass;
     private Button lg_login;
     private TextView lg_register;
+    private AlertDialog processAlertDialog;
+    private AlertDialog alertDialog;
     private Bundle register_msg;//用来保存注册活动的信息
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,11 +41,18 @@ public class LoginActivity extends AppCompatActivity {
 
 
     }
-    public void setRegisterListener(){
+    public void setButtonListener(){
+        //为注册设置监听
         lg_register.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
             intent.putExtra("register_msg",register_msg);
             startActivityForResult(intent,1);
+        });
+        lg_login.setOnClickListener(v->{
+            User user = new User();
+            user.setPhone(lg_user.getText().toString());
+            user.setPassword(lg_pass.getText().toString());
+            loginPresenter.userLogin(user);
         });
     }
     public void init(){
@@ -48,6 +62,13 @@ public class LoginActivity extends AppCompatActivity {
         lg_register = findViewById(R.id.lg_register);
         lg_user_layout = findViewById(R.id.lg_user_layout);
         lg_pass_layout = findViewById(R.id.lg_pass_layout);
+        processAlertDialog = ProcessBarUtil.showProgressDialog(this,"提示","正在登录...",null,null,null,null,false);
+        alertDialog = ProcessBarUtil.showSimpleDialog(this, "提示", null, "确定", null, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        },null,true);
         loginPresenter = new LoginPresenter();
         register_msg = new Bundle();
         //与绑定loginPresenter绑定
@@ -57,11 +78,12 @@ public class LoginActivity extends AppCompatActivity {
         //给TextInputEditText设置监听者
         setUserTextInputEditTextListener();
         setPassTextInputEditTextListener();
-        //给注册设置监听者
-        setRegisterListener();
+        //给按钮设置监听者
+        setButtonListener();
+        setButtonStatus(false);
     }
     //给UserTextInputEditText设置监听者
-    public void setUserTextInputEditTextListener(){
+    private void setUserTextInputEditTextListener(){
         lg_user.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -76,7 +98,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
     //给PassTextInputEditText设置监听者
-    public void setPassTextInputEditTextListener(){
+    private void setPassTextInputEditTextListener(){
         lg_pass.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -129,5 +151,29 @@ public class LoginActivity extends AppCompatActivity {
     }
     public void putDataForBundle(String name,long value){
         register_msg.putLong(name,value);
+    }
+    //弹出提示框
+    public void showAlertDialog(final String msg){
+        runOnUiThread(() -> {
+            alertDialog.setMessage(msg);
+            alertDialog.show();
+        });
+    }
+
+    //弹出加载弹出框
+    public void showProgressDialog(){
+        runOnUiThread(()-> processAlertDialog.show());
+    }
+    //关闭加载弹出框
+    public void closeProgressDialog(){
+        runOnUiThread(()-> processAlertDialog.cancel());
+    }
+
+    //启动主界面
+    public void launchHomeActivity(){
+        Intent intent = new Intent(this, HomeActivity.class);
+        intent.putExtra("phone",lg_user.getText().toString());
+        intent.putExtra("password",lg_pass.getText().toString());
+        startActivity(intent);
     }
 }
